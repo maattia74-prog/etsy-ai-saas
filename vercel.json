@@ -2,57 +2,5 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm ci --legacy-peer-deps || npm install --legacy-peer-deps",
-  "framework": "nextjs",
-  "env": [
-    {
-      "key": "DATABASE_URL",
-      "description": "PostgreSQL connection string",
-      "value": ""
-    },
-    {
-      "key": "CLERK_SECRET_KEY",
-      "description": "Clerk authentication secret",
-      "value": ""
-    },
-    {
-      "key": "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-      "description": "Clerk publishable key",
-      "value": ""
-    },
-    {
-      "key": "STRIPE_SECRET_KEY",
-      "description": "Stripe secret key",
-      "value": ""
-    },
-    {
-      "key": "OPENAI_API_KEY",
-      "description": "OpenAI API key",
-      "value": ""
-    },
-    {
-      "key": "GROQ_API_KEY",
-      "description": "Groq API key",
-      "value": ""
-    },
-    {
-      "key": "TOGETHER_API_KEY",
-      "description": "Together AI API key",
-      "value": ""
-    },
-    {
-      "key": "R2_ACCESS_KEY_ID",
-      "description": "Cloudflare R2 access key",
-      "value": ""
-    },
-    {
-      "key": "R2_SECRET_ACCESS_KEY",
-      "description": "Cloudflare R2 secret key",
-      "value": ""
-    },
-    {
-      "key": "R2_ENDPOINT",
-      "description": "Cloudflare R2 endpoint",
-      "value": ""
-    }
-  ]
+  "framework": "nextjs"
 }
