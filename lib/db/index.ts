@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import * as schema from './schema';
 
-let cachedDb: any = null;
+let cachedDb: ReturnType<typeof drizzle> | null = null;
 
 export function getDb() {
   if (!process.env.DATABASE_URL) {
@@ -17,12 +17,16 @@ export function getDb() {
   return cachedDb;
 }
 
-// Export a lazy getter for backward compatibility
-export const db = new Proxy({}, {
-  get: (target, prop) => {
-    return getDb()[prop as string];
-  },
-}) as any;
+// Export the database instance directly
+export const db = new Proxy(
+  {},
+  {
+    get: (target, prop) => {
+      const database = getDb();
+      return (database as any)[prop];
+    },
+  }
+) as ReturnType<typeof drizzle>;
 
-export type Database = any;
+export type Database = ReturnType<typeof drizzle>;
 export * from './schema';
