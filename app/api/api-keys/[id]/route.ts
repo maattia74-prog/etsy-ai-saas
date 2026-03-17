@@ -7,9 +7,10 @@ import { apiSuccess, apiError, handleApiError } from '@/lib/utils/api-response';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context?.params?.id;
     const { userId } = await auth();
     if (!userId) {
       return apiError('Unauthorized', 401);
@@ -19,7 +20,7 @@ export async function DELETE(
       .delete(apiKeys)
       .where(
         and(
-          eq(apiKeys.id, params.id),
+          eq(apiKeys.id, id),
           eq(apiKeys.userId, userId)
         )
       );

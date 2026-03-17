@@ -9,9 +9,10 @@ import { checkQuota } from '@/lib/utils/rate-limit';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context?.params?.id;
     const { userId } = await auth();
     if (!userId) {
       return apiError('Unauthorized', 401);
@@ -30,7 +31,7 @@ export async function POST(
     const [competitor] = await db
       .select()
       .from(competitors)
-      .where(eq(competitors.id, params.id))
+      .where(eq(competitors.id, id))
       .limit(1);
 
     if (!competitor || competitor.userId !== userId) {
@@ -65,13 +66,13 @@ export async function POST(
         analysisData: analysis,
         lastAnalyzedAt: new Date(),
       })
-      .where(eq(competitors.id, params.id));
+      .where(eq(competitors.id, id));
 
     // Log analysis
     await db.insert(aiAnalyses).values({
       userId,
       analysisType: 'competitor',
-      inputData: { competitorId: params.id, competitorName: competitor.name },
+      inputData: { competitorId: id, competitorName: competitor.name },
       results: analysis,
       processingTimeMs: processingTime,
     });

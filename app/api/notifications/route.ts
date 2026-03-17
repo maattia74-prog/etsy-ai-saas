@@ -15,16 +15,14 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    let query = db
+    const whereCondition = unreadOnly
+      ? and(eq(notifications.userId, userId), eq(notifications.isRead, false))
+      : eq(notifications.userId, userId);
+
+    const results = await db
       .select()
       .from(notifications)
-      .where(eq(notifications.userId, userId));
-
-    if (unreadOnly) {
-      query = query.where(eq(notifications.isRead, false));
-    }
-
-    const results = await query
+      .where(whereCondition)
       .orderBy(desc(notifications.createdAt))
       .limit(50);
 

@@ -21,16 +21,14 @@ export async function GET(req: NextRequest) {
 
     const offset = (page - 1) * limit;
 
-    let query = db
+    const whereCondition = search
+      ? and(eq(competitors.userId, userId), ilike(competitors.name, `%${search}%`))
+      : eq(competitors.userId, userId);
+
+    const results = await db
       .select()
       .from(competitors)
-      .where(eq(competitors.userId, userId));
-
-    if (search) {
-      query = query.where(ilike(competitors.name, `%${search}%`));
-    }
-
-    const results = await query
+      .where(whereCondition)
       .orderBy(desc(competitors.lastAnalyzedAt))
       .limit(limit)
       .offset(offset);
@@ -38,7 +36,7 @@ export async function GET(req: NextRequest) {
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)` })
       .from(competitors)
-      .where(eq(competitors.userId, userId));
+      .where(whereCondition);
 
     return apiSuccess({
       competitors: results,

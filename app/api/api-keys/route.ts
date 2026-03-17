@@ -54,14 +54,20 @@ export async function POST(req: NextRequest) {
     const keyHash = createHash('sha256').update(key).digest('hex');
     const keyPreview = key.substring(0, 12);
 
+    const payload = {
+      userId,
+      keyHash,
+      keyPreview,
+      ...validation.data,
+    } as any;
+
+    if (payload.expiresAt) {
+      payload.expiresAt = new Date(payload.expiresAt);
+    }
+
     const [apiKey] = await db
       .insert(apiKeys)
-      .values({
-        userId,
-        keyHash,
-        keyPreview,
-        ...validation.data,
-      })
+      .values(payload)
       .returning();
 
     return apiSuccess({

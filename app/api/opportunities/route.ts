@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { opportunities, keywords, products } from '@/lib/db/schema';
-import { eq, desc, gte } from 'drizzle-orm';
+import { eq, desc, gte, and } from 'drizzle-orm';
 import { apiSuccess, apiError, handleApiError } from '@/lib/utils/api-response';
 
 export async function GET(req: NextRequest) {
@@ -16,20 +16,18 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type'); // niche, keyword, product, pricing
     const minScore = parseInt(searchParams.get('minScore') || '0');
 
-    let query = db
+    const whereCondition = type
+      ? and(eq(opportunities.userId, userId), eq(opportunities.type, type))
+      : eq(opportunities.userId, userId);
+
+    const whereConditionWithScore = minScore > 0
+      ? and(whereCondition, gte(opportunities.score, minScore))
+      : whereCondition;
+
+    const results = await db
       .select()
       .from(opportunities)
-      .where(eq(opportunities.userId, userId));
-
-    if (type) {
-      query = query.where(eq(opportunities.type, type));
-    }
-
-    if (minScore > 0) {
-      query = query.where(gte(opportunities.score, minScore));
-    }
-
-    const results = await query
+      .where(whereConditionWithScore)
       .orderBy(desc(opportunities.score))
       .limit(50);
 
@@ -57,20 +55,20 @@ export async function POST(req: NextRequest) {
     const generatedOpportunities = [];
 
     for (const keyword of userKeywords) {
-      if (keyword.opportunityScore > 70) {
+      if ((keyword.opportunityScore ?? 0) > 70) {
         generatedOpportunities.push({
           userId,
           type: 'keyword',
           title: `High Opportunity: ${keyword.keyword}`,
           description: `This keyword has low competition (${keyword.competition}) and high search volume (${keyword.searchVolume})`,
-          score: keyword.opportunityScore,
-          difficulty: keyword.competition,
+          score: keyword.opportunityScore ?? 0,
+          difficulty: keyword.competition ?? 'unknown',
           timeframe: 'short',
           data: {
             keyword: keyword.keyword,
-            searchVolume: keyword.searchVolume,
-            competition: keyword.competition,
-            cpc: keyword.cpc,
+            searchVolume: keyword.searchVolume ?? 0,
+            competition: keyword.competition ?? 'unknown',
+            cpc: keyword.cpc ?? 0,
           },
           actionItems: [
             'Create products targeting this keyword',
