@@ -1,8 +1,9 @@
 {
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm ci --legacy-peer-deps || npm install --legacy-peer-deps",
   "framework": "nextjs",
+  "nodeVersion": "18.x",
   "env": [
     {
       "key": "DATABASE_URL",
@@ -53,11 +54,6 @@
       "key": "R2_ENDPOINT",
       "description": "Cloudflare R2 endpoint",
       "value": ""
-    },
-    {
-      "key": "NPM_CONFIG_LEGACY_PEER_DEPS",
-      "description": "Enable legacy peer deps for dependency resolution",
-      "value": "true"
     }
   ]
 }
