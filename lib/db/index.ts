@@ -22,7 +22,7 @@ export const db = new Proxy({}, {
   get: (target, prop) => {
     return getDb()[prop as string];
   },
-});
+}) as any;
 
 export type Database = any;
 export * from './schema';
