@@ -47,8 +47,3 @@ wrangler.toml
 # Ignore custom code and secrets
 .env*.local
 .env.example
-hooks/
-lib/
-workers/
-drizzle.config.ts
-middleware.ts
